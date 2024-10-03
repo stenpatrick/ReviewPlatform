@@ -1,0 +1,44 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "version": "1.0.0",
+    "title": "Games API TARpe22"
+  },
+  "paths": {
+    "/games": {
+      "summary": "Games object",
+      "get": {
+        "tags": [
+          "GAMES"
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "examples": {
+                  "Games": {
+                    "value": [
+                      "Witcher 3",
+                      "Cybepunk 2077"
+                    ]
+                  },
+                  "None": {
+                    "value": []
+                  }
+                }
+              }
+            },
+            "description": "Success"
+          }
+        },
+        "summary": "Get all game names"
+      }
+    }
+  }
+}

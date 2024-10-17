@@ -1,19 +1,16 @@
 {
   "openapi": "3.0.2",
   "info": {
-    "title": "doctors API TARpe22",
-    "version": "1.0.0",
-    "description": "# doctors API Tarpe22 Hajusrakenduste näidisrakendus \n\n### Error handling\nErrors are presented using the HTTP status codes 400-599. The response includes a more detailed explanation about the error in the body.\n\n```\n{\n  \"error\": \"Cleartext explanation of the error that occurred\"\n}\n```\n\n### Generic API errors\nThese error responses can be returned by any of the described endpoints.\n\n| HTTP status  |  Description |\n|---|---|\n| 400| Bad input parameters or invalid request. More information can be found in the response body.\n| 401| The consumer does not have access to the requested resource or the provided token is not valid.\n| 404| The requested resource can not be found or the user does not have access to the resource.\n| 5XX| A server error has occurred while processing the request."
+    "title": "Doctors API TARpe22",
+    "version": "1.0.0"
   },
   "paths": {
     "/doctors": {
-      "summary": "doctors object",
       "get": {
-        "tags": [
-          "doctorS"
-        ],
+        "tags": ["Doctors"],
         "responses": {
           "200": {
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
@@ -25,26 +22,20 @@
                 "examples": {
                   "List of doctors": {
                     "value": [
-                      {
-                        "id": 47,
-                        "name": "some text"
-                      },
-                      {
-                        "id": 40,
-                        "name": "some text"
-                      }
+                      { "id": 1, "name": "Jane Doe", "rating": 4 },
+                      { "id": 2, "name": "Joe Doe", "rating": 5 }
                     ]
                   }
                 }
               }
-            },
-            "description": "Success"
+            }
           }
         },
-        "summary": "Get all doctor names"
+        "summary": "Get all doctors"
       },
       "post": {
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
@@ -53,152 +44,101 @@
               "examples": {
                 "Newdoctor": {
                   "value": {
-                    "id": 47,
-                    "name": "some text",
-                    "rating": 3,
-                    "comments": "Very professional."
+                    "name": "Jane Doe",
+                    "rating": 4,
+                    "contact": ""
                   }
                 },
                 "doctorWithoutRating": {
                   "value": {
-                    "id": 42,
                     "name": "Jane Doe",
-                    "rating": 3,
-                    "comments": "Very unprofessional."
+                    "contact": ""
                   }
                 }
               }
             }
-          },
-          "required": true
+          }
         },
-        "tags": [
-          "doctorS"
-        ],
+        "tags": ["Doctors"],
         "responses": {
           "201": {
+            "description": "Success",
             "headers": {
               "location": {
-                "schema": {
-                  "type": "string"
-                },
+                "schema": { "type": "string" },
                 "description": "Location of created object"
               }
             },
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/doctor"
-                }
+                "schema": { "$ref": "#/components/schemas/doctor" }
               }
-            },
-            "description": "Success"
+            }
           }
         },
-        "summary": "Add new doctor"
+        "summary": "Add a new doctor"
       }
     },
     "/doctors/{id}": {
-      "summary": "Deal with doctor object",
       "get": {
-        "tags": [
-          "doctorS"
-        ],
+        "tags": ["Doctors"],
         "parameters": [
           {
-            "examples": {
-              "First": {
-                "value": "1"
-              }
-            },
             "name": "id",
             "description": "Id of the doctor being requested",
-            "schema": {
-              "type": "integer"
-            },
+            "schema": { "type": "integer" },
             "in": "path",
             "required": true
           }
         ],
         "responses": {
           "200": {
+            "description": "Success",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/doctor"
-                },
+                "schema": { "$ref": "#/components/schemas/doctor" },
                 "examples": {
                   "One doctor": {
                     "value": {
-                      "id": 36,
-                      "name": "some text",
+                      "id": 1,
+                      "name": "Jane Doe",
                       "rating": 4,
-                      "comments": "Great experience."
-                    }
-                  },
-                  "doctor without rating": {
-                    "value": {
-                      "id": 61,
-                      "name": "some text",
-                      "comments": "Friendly and helpful."
+                      "contact": ""
                     }
                   }
                 }
-              }
-            },
-            "description": "Success"
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "InvalidID": {
-                    "value": {
-                      "error": "ID must be a whole number: ab12"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "Invalid request path parameter"
-          },
-          "404": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "NotFound": {
-                    "value": {
-                      "error": "doctor Not Found!"
-                    }
-                  }
-                }
-              }
-            },
-            "description": "doctor with given id does not exist"
-          }
-        },
-        "summary": "Get the doctor with given id"
-      },
-      "put": {
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Newdoctor"
               }
             }
           },
-          "required": true
+          "400": {
+            "description": "Invalid request path parameter",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "Doctor not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
         },
-        "tags": [
-          "doctorS"
-        ],
+        "summary": "Get a doctor by ID"
+      },
+      "put": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Newdoctor" }
+            }
+          }
+        },
+        "tags": ["Doctors"],
         "parameters": [
           {
             "name": "id",
@@ -209,157 +149,392 @@
         ],
         "responses": {
           "200": {
+            "description": "Success",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/doctor"
-                }
+                "schema": { "$ref": "#/components/schemas/doctor" }
               }
-            },
-            "description": "Success"
+            }
           }
         },
-        "summary": "Modify existing doctor"
+        "summary": "Modify an existing doctor"
       },
       "delete": {
-        "tags": [
-          "doctorS"
-        ],
+        "tags": ["Doctors"],
         "parameters": [
           {
             "name": "id",
-            "description": "Id of doctor to be deleted",
-            "schema": {
-              "type": "integer"
-            },
+            "description": "Id of the doctor to be deleted",
+            "schema": { "type": "integer" },
             "in": "path",
             "required": true
           }
         ],
         "responses": {
-          "204": {
-            "description": "doctor deleted"
-          },
+          "204": { "description": "Doctor deleted" },
           "400": {
+            "description": "Invalid ID",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "IdError": {
-                    "value": {
-                      "error": "ID must be a whole number: esimene"
-                    }
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/Error" }
               }
-            },
-            "description": "Incorrect Id"
+            }
           },
           "404": {
+            "description": "Doctor not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "summary": "Delete a doctor"
+      }
+    },
+    "/users": {
+      "get": {
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Success",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "examples": {
-                  "NotFound": {
-                    "value": {
-                      "error": "doctor Not Found!"
-                    }
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/userListItem"
                   }
                 }
               }
-            },
-            "description": "doctor not found"
+            }
           }
         },
-        "summary": "Remove a doctor"
+        "summary": "Get all users"
+      },
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Newuser" }
+            }
+          }
+        },
+        "tags": ["Users"],
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/user" }
+              }
+            }
+          }
+        },
+        "summary": "Add a new user"
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Id of the user being requested",
+            "schema": { "type": "integer" },
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/user" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "summary": "Get a user by ID"
+      },
+      "put": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Newuser" }
+            }
+          }
+        },
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Id of the user to be modified",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/user" }
+              }
+            }
+          }
+        },
+        "summary": "Modify an existing user"
+      },
+      "delete": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Id of the user to be deleted",
+            "schema": { "type": "integer" },
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": { "description": "User deleted" },
+          "400": {
+            "description": "Invalid ID",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "summary": "Delete a user by ID"
+      }
+    },
+    "/comments": {
+      "get": {
+        "tags": ["Comments"],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/comment"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all comments"
+      },
+      "post": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Newcomment" }
+            }
+          }
+        },
+        "tags": ["Comments"],
+        "responses": {
+          "201": {
+            "description": "Comment created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/comment" }
+              }
+            }
+          }
+        },
+        "summary": "Add a new comment"
+      }
+    },
+    "/comments/{id}": {
+      "get": {
+        "tags": ["Comments"],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Id of the comment being requested",
+            "schema": { "type": "integer" },
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/comment" }
+              }
+            }
+          },
+          "404": {
+            "description": "Comment not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "summary": "Get a comment by ID"
+      },
+      "put": {
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Newcomment" }
+            }
+          }
+        },
+        "tags": ["Comments"],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Id of the comment to be modified",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/comment" }
+              }
+            }
+          }
+        },
+        "summary": "Modify an existing comment"
+      },
+      "delete": {
+        "tags": ["Comments"],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Id of the comment to be deleted",
+            "schema": { "type": "integer" },
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": { "description": "Comment deleted" },
+          "404": {
+            "description": "Comment not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        },
+        "summary": "Delete a comment"
       }
     }
   },
   "components": {
     "schemas": {
+      "doctorListItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "rating": { "type": "integer" }
+        }
+      },
       "doctor": {
         "title": "Root Type for doctor",
         "description": "",
         "type": "object",
         "properties": {
-          "id": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          },
-          "rating": {
-            "format": "float",
-            "type": "number"
-          },
-          "comments": {
-            "type": "string",
-            "description": "Optional comments about the doctor"
-          }
-        },
-        "example": {
-          "id": 1,
-          "name": "Jane Doe",
-          "rating": 4,
-          "comments": "Very knowledgeable."
-        }
-      },
-      "doctorListItem": {
-        "title": "Root Type for doctorListItem",
-        "description": "",
-        "type": "object",
-        "properties": {
-          "id": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "example": {
-          "id": 1,
-          "name": "Joe Doe"
-        }
-      },
-      "Error": {
-        "title": "Root Type for Error",
-        "description": "",
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "string"
-          }
-        },
-        "example": {
-          "error": "Error message"
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "rating": { "type": "integer" },
+          "contact": { "type": "string" }
         }
       },
       "Newdoctor": {
-        "description": "doctor to be saved",
-        "required": [
-          "name"
-        ],
         "type": "object",
         "properties": {
-          "name": {
-            "description": "Must contain at least one non-whitespace character",
-            "type": "string"
-          },
-          "rating": {
-            "format": "float",
-            "description": "Rating must be between 0 and 5",
-            "type": "number"
-          },
-          "comments": {
-            "type": "string",
-            "description": "Optional comments about the doctor"
-          }
+          "name": { "type": "string" },
+          "rating": { "type": "integer" },
+          "contact": { "type": "string" }
+        }
+      },
+      "userListItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "contact": { "type": "string" }
+        }
+      },
+      "user": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "name": { "type": "string" },
+          "contact": { "type": "string" }
+        }
+      },
+      "Newuser": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "contact": { "type": "string" }
+        }
+      },
+      "comment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "comment": { "type": "string" },
+          "userId": { "type": "integer" },
+          "doctorId": { "type": "integer" }
+        }
+      },
+      "Newcomment": {
+        "type": "object",
+        "properties": {
+          "comment": { "type": "string" },
+          "userId": { "type": "integer" },
+          "doctorId": { "type": "integer" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer" },
+          "message": { "type": "string" }
         }
       }
     }

@@ -18,7 +18,10 @@ const doctors = [
     { id: 2, name: "Joe Doe", rating: 5, comments: "" },
 ];
 
-app.get("/doctors", (req, res) => {
+const { db, sync} = require("./db");
+
+app.get("/doctors", async (req, res) => {
+    const doctors = await db.doctors.findAll();
     res.send(doctors.map(({ id, name, rating, comments }) => {
         return { id, name, rating, comments };
     }));
@@ -41,20 +44,20 @@ app.post("/doctors", (req, res) => {
         comments: req.body.comments || "" // Optional comments
     };
 
-    doctors.push(newdoctor);
+    const bornDoctor = db.doctors.create(newDoctor);
     res.status(201)
-        .location(`${getBaseUrl(req)}/doctors/${newdoctor.id}`)
-        .send(newdoctor);
+        .location(`${getBaseUrl(req)}/doctors/${bornDoctor.id}`)
+        .send(bornDoctor);
 });
 
-app.get("/doctors/:id", (req, res) => {
-    const doctor = getdoctor(req, res);
+app.get("/doctors/:id", async (req, res) => {
+    const doctor = await getdoctor(req, res);
     if (!doctor) { return; }
     return res.send(doctor);
 });
 
-app.put("/doctors/:id", (req, res) => {
-    const doctor = getdoctor(req, res);
+app.put("/doctors/:id", async (req, res) => {
+    const doctor = await getdoctor(req, res);
     if (!doctor) { return; }
     if (!req.body.name || req.body.name.trim().length === 0) {
         return res.status(400).send({ error: "Missing required field 'name'" });
@@ -68,22 +71,24 @@ app.put("/doctors/:id", (req, res) => {
     doctor.name = req.body.name;
     doctor.rating = isNaN(newRating) ? null : newRating;
     doctor.comments = req.body.comments || ""; // Update comments
-
+    await doctor.save();
     return res
         .location(`${getBaseUrl(req)}/doctors/${doctor.id}`)
         .send(doctor);
 });
 
-app.delete("/doctors/:id", (req, res) => {
-    const doctor = getdoctor(req, res);
-    if (!doctor) { return; }
-    doctors.splice(doctors.indexOf(doctor), 1);
+app.delete("/doctors/:id", async (req, res) => {
+    const doctor = await getdoctor(req, res);
+    if (!doctor) { return }
+    await doctor.destroy();
     return res.status(204).send();
 });
 
-app.listen(port, () => {
-    require("./db")
-    console.log(`API up at: http://${host}:${port}`);
+app.listen(port, async() => {
+    if(process.env.SYNC === "true") {
+        await sync();
+    }
+    console.log(`DR. API up at: http://${host}:${port}`);
 });
 
 function getBaseUrl(req) {
@@ -95,13 +100,13 @@ function createId() {
     return maxIddoctor.id + 1;
 }
 
-function getdoctor(req, res) {
+async function getdoctor(req, res) {
     const idNumber = parseInt(req.params.id);
     if (isNaN(idNumber)) {
         res.status(400).send({ error: `ID must be a whole number: ${req.params.id}` });
         return null;
     }
-    const doctor = doctors.find(g => g.id === idNumber);
+    const doctor = await db.doctors.findByPk(g => g.id === idNumber);
     if (!doctor) {
         res.status(404).send({ error: `Doctor Not Found!` });
         return null;

@@ -16,5 +16,8 @@
     "dotenv": "^16.4.5",
     "mariadb": "^3.3.2",
     "sequelize": "^6.37.4"
+  },
+  "devDependencies": {
+    "@types/sequelize": "^4.28.20"
   }
 }

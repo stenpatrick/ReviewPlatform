@@ -11,10 +11,14 @@ const Doctor = sequelize.define(
         type: DataTypes.STRING,
         allowNull: false,
       },
-      price: {
+      rating: {
         type: DataTypes.DECIMAL(10, 2),
         // allowNull defaults to true
       },
+      contact: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      }
     },
     {
       // Other model options go here

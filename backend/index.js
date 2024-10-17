@@ -115,7 +115,7 @@ function getDoctor(req, res) {
         res.status(400).send({ error: `ID must be a whole number: ${req.params.id}` });
         return null;
     }
-    const doctor = await db.doctors.findByPk(g => g.id === idNumber);
+    const doctor = db.doctors.findByPk(g => g.id === idNumber);
     if (!doctor) {
         res.status(404).send({ error: `Doctor Not Found!` });
         return null;

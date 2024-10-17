@@ -42,7 +42,7 @@ paths:
     summary: doctors object
     get:
       tags:
-        - doctorS
+        - Doctors
       responses:
         '200':
           content:
@@ -66,7 +66,7 @@ paths:
     summary: Deal with doctor object
     get:
       tags:
-        - doctorS
+        - Doctors
       parameters:
         -
           examples:
@@ -135,7 +135,7 @@ components:
       example:
         id: 1
         name: Jane Doe
-        rating: 29.99
+        rating: 5
     doctorListItem:
       title: Root Type for doctorListItem
       description: ''

@@ -1,102 +1,108 @@
-const port = 8080
-const host = 'localhost'
-const express = require("express")
-const app = express()
-const swaggerUi = require("swagger-ui-express")
-const swaggerDoc = require("./swagger.json")
+const port = 8080;
+const host = 'localhost';
+const express = require("express");
+const app = express();
+const swaggerUi = require("swagger-ui-express");
+const swaggerDoc = require("./swagger.json");
 
-app.use(express.json())
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc))
+app.use(express.json());
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 app.get("/", (req, res) => {
-    res.send(`Server running. Docs at <a href="http://${host}:${port}/docs">/docs</a>`)
-})
+    res.send(`Server running. Docs at <a href="http://${host}:${port}/docs">/docs</a>`);
+});
 
-const games = [
-    {id: 1, name: "Witcher 3", price: 29.99},
-    {id: 8, name: "Cyberpunk 2077", price: 59.99},
-    {id: 2, name: "Minecraft", price: 26.99},
-    {id: 3, name: "Counter-Strike: Global Offensive", price: 0},
-    {id: 4, name: "Roblox", price: 0},
-    {id: 5, name: "Grand Theft Auto V", price: 29.99},
-    {id: 6, name: "Valorant", price: null},
-    {id: 7, name: "Forza Horizon 5", price: 59.99}
-]
+const doctors = [
+    { id: 1, name: "Jane Doe", rating: 3, comments: "" },
+    { id: 2, name: "Joe Doe", rating: 5, comments: "" },
+];
 
-app.get("/games", (req, res) => {
-    res.send(games.map(({id,name}) => {
-         return {id, name}
-    }))
-})
+app.get("/doctors", (req, res) => {
+    res.send(doctors.map(({ id, name, rating, comments }) => {
+        return { id, name, rating, comments };
+    }));
+});
 
-
-app.post("/games", (req, res) => {
+app.post("/doctors", (req, res) => {
     if (!req.body.name || req.body.name.trim().length === 0) {
-        return res.status(400).send({error: "Missing required field 'name'"})
+        return res.status(400).send({ error: "Missing required field 'name'" });
     }
-    const newPrice = parseFloat(req.body.price);
-    const newGame = {
+
+    const newRating = parseFloat(req.body.rating);
+    if (newRating < 0 || newRating > 5) {
+        return res.status(400).send({ error: "Rating must be between 0 and 5" });
+    }
+
+    const newdoctor = {
         id: createId(),
         name: req.body.name,
-        price: isNaN(newPrice) ? null : newPrice
-    }
-    games.push(newGame)
+        rating: isNaN(newRating) ? null : newRating,
+        comments: req.body.comments || "" // Optional comments
+    };
+
+    doctors.push(newdoctor);
     res.status(201)
-        .location(`${getBaseUrl(req)}/games/${newGame.id}`)
-        .send(newGame)
-})
+        .location(`${getBaseUrl(req)}/doctors/${newdoctor.id}`)
+        .send(newdoctor);
+});
 
-app.get("/games/:id", (req, res) => {
-    const game = getGame(req,res)
-    if (!game) { return }
-    return res.send(game)
-})
+app.get("/doctors/:id", (req, res) => {
+    const doctor = getdoctor(req, res);
+    if (!doctor) { return; }
+    return res.send(doctor);
+});
 
-app.put("/games/:id", (req, res) => {
-    const game = getGame(req,res)
-    if (!game) { return }
+app.put("/doctors/:id", (req, res) => {
+    const doctor = getdoctor(req, res);
+    if (!doctor) { return; }
     if (!req.body.name || req.body.name.trim().length === 0) {
-        return res.status(400).send({error: "Missing required field 'name'"})
+        return res.status(400).send({ error: "Missing required field 'name'" });
     }
-    const newPrice = parseFloat(req.body.price);
-    game.name = req.body.name
-    game.price = isNaN(newPrice) ? null : newPrice
+
+    const newRating = parseFloat(req.body.rating);
+    if (newRating < 0 || newRating > 5) {
+        return res.status(400).send({ error: "Rating must be between 0 and 5" });
+    }
+
+    doctor.name = req.body.name;
+    doctor.rating = isNaN(newRating) ? null : newRating;
+    doctor.comments = req.body.comments || ""; // Update comments
+
     return res
-        .location(`${getBaseUrl(req)}/games/${game.id}`)
-        .send(game)
-})
+        .location(`${getBaseUrl(req)}/doctors/${doctor.id}`)
+        .send(doctor);
+});
 
-app.delete("/games/:id", (req, res) => {
-    const game = getGame(req,res)
-    if (!game) { return }
-    games.splice(games.indexOf(game), 1)
-    return res.status(204).send()
-})
-
+app.delete("/doctors/:id", (req, res) => {
+    const doctor = getdoctor(req, res);
+    if (!doctor) { return; }
+    doctors.splice(doctors.indexOf(doctor), 1);
+    return res.status(204).send();
+});
 
 app.listen(port, () => {
-    console.log(`API up at: http://${host}:${port}`)
-})
+    console.log(`API up at: http://${host}:${port}`);
+});
 
 function getBaseUrl(req) {
-    return (req.connection && req.connection.encrypted ? 'https' : 'http') + `://${req.headers.host}`
+    return (req.connection && req.connection.encrypted ? 'https' : 'http') + `://${req.headers.host}`;
 }
 
 function createId() {
-    const maxIdGame = games.reduce((prev, current) => (prev.id > current.id) ? prev : current, 1)
-    return maxIdGame.id + 1;
+    const maxIddoctor = doctors.reduce((prev, current) => (prev.id > current.id) ? prev : current, { id: 0 });
+    return maxIddoctor.id + 1;
 }
 
-function getGame(req, res) {
-    const idNumber = parseInt(req.params.id)
+function getdoctor(req, res) {
+    const idNumber = parseInt(req.params.id);
     if (isNaN(idNumber)) {
-        res.status(400).send({error: `ID must be a whole number: ${req.params.id}`})
-        return null
+        res.status(400).send({ error: `ID must be a whole number: ${req.params.id}` });
+        return null;
     }
-    const game = games.find(g => g.id === idNumber)
-    if (!game) {
-        res.status(404).send({error: `Game Not Found!`})
-        return null
+    const doctor = doctors.find(g => g.id === idNumber);
+    if (!doctor) {
+        res.status(404).send({ error: `Doctor Not Found!` });
+        return null;
     }
-    return game
+    return doctor;
 }

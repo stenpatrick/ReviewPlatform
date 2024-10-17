@@ -1,15 +1,16 @@
 {
   "openapi": "3.0.2",
   "info": {
+    "title": "doctors API TARpe22",
     "version": "1.0.0",
-    "title": "Games API TARpe22"
+    "description": "# doctors API Tarpe22 Hajusrakenduste näidisrakendus \n\n### Error handling\nErrors are presented using the HTTP status codes 400-599. The response includes a more detailed explanation about the error in the body.\n\n```\n{\n  \"error\": \"Cleartext explanation of the error that occurred\"\n}\n```\n\n### Generic API errors\nThese error responses can be returned by any of the described endpoints.\n\n| HTTP status  |  Description |\n|---|---|\n| 400| Bad input parameters or invalid request. More information can be found in the response body.\n| 401| The consumer does not have access to the requested resource or the provided token is not valid.\n| 404| The requested resource can not be found or the user does not have access to the resource.\n| 5XX| A server error has occurred while processing the request."
   },
   "paths": {
-    "/games": {
-      "summary": "Games object",
+    "/doctors": {
+      "summary": "doctors object",
       "get": {
         "tags": [
-          "GAMES"
+          "doctorS"
         ],
         "responses": {
           "200": {
@@ -18,18 +19,21 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "string"
+                    "$ref": "#/components/schemas/doctorListItem"
                   }
                 },
                 "examples": {
-                  "Games": {
+                  "List of doctors": {
                     "value": [
-                      "Witcher 3",
-                      "Cybepunk 2077"
+                      {
+                        "id": 47,
+                        "name": "some text"
+                      },
+                      {
+                        "id": 40,
+                        "name": "some text"
+                      }
                     ]
-                  },
-                  "None": {
-                    "value": []
                   }
                 }
               }
@@ -37,7 +41,326 @@
             "description": "Success"
           }
         },
-        "summary": "Get all game names"
+        "summary": "Get all doctor names"
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Newdoctor"
+              },
+              "examples": {
+                "Newdoctor": {
+                  "value": {
+                    "id": 47,
+                    "name": "some text",
+                    "rating": 3,
+                    "comments": "Very professional."
+                  }
+                },
+                "doctorWithoutRating": {
+                  "value": {
+                    "id": 42,
+                    "name": "Jane Doe",
+                    "rating": 3,
+                    "comments": "Very unprofessional."
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "doctorS"
+        ],
+        "responses": {
+          "201": {
+            "headers": {
+              "location": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Location of created object"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/doctor"
+                }
+              }
+            },
+            "description": "Success"
+          }
+        },
+        "summary": "Add new doctor"
+      }
+    },
+    "/doctors/{id}": {
+      "summary": "Deal with doctor object",
+      "get": {
+        "tags": [
+          "doctorS"
+        ],
+        "parameters": [
+          {
+            "examples": {
+              "First": {
+                "value": "1"
+              }
+            },
+            "name": "id",
+            "description": "Id of the doctor being requested",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/doctor"
+                },
+                "examples": {
+                  "One doctor": {
+                    "value": {
+                      "id": 36,
+                      "name": "some text",
+                      "rating": 4,
+                      "comments": "Great experience."
+                    }
+                  },
+                  "doctor without rating": {
+                    "value": {
+                      "id": 61,
+                      "name": "some text",
+                      "comments": "Friendly and helpful."
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "InvalidID": {
+                    "value": {
+                      "error": "ID must be a whole number: ab12"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Invalid request path parameter"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFound": {
+                    "value": {
+                      "error": "doctor Not Found!"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "doctor with given id does not exist"
+          }
+        },
+        "summary": "Get the doctor with given id"
+      },
+      "put": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Newdoctor"
+              }
+            }
+          },
+          "required": true
+        },
+        "tags": [
+          "doctorS"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Id of the doctor to be modified",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/doctor"
+                }
+              }
+            },
+            "description": "Success"
+          }
+        },
+        "summary": "Modify existing doctor"
+      },
+      "delete": {
+        "tags": [
+          "doctorS"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "description": "Id of doctor to be deleted",
+            "schema": {
+              "type": "integer"
+            },
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "doctor deleted"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "IdError": {
+                    "value": {
+                      "error": "ID must be a whole number: esimene"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Incorrect Id"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "examples": {
+                  "NotFound": {
+                    "value": {
+                      "error": "doctor Not Found!"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "doctor not found"
+          }
+        },
+        "summary": "Remove a doctor"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "doctor": {
+        "title": "Root Type for doctor",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "rating": {
+            "format": "float",
+            "type": "number"
+          },
+          "comments": {
+            "type": "string",
+            "description": "Optional comments about the doctor"
+          }
+        },
+        "example": {
+          "id": 1,
+          "name": "Jane Doe",
+          "rating": 4,
+          "comments": "Very knowledgeable."
+        }
+      },
+      "doctorListItem": {
+        "title": "Root Type for doctorListItem",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "id": 1,
+          "name": "Joe Doe"
+        }
+      },
+      "Error": {
+        "title": "Root Type for Error",
+        "description": "",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "example": {
+          "error": "Error message"
+        }
+      },
+      "Newdoctor": {
+        "description": "doctor to be saved",
+        "required": [
+          "name"
+        ],
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Must contain at least one non-whitespace character",
+            "type": "string"
+          },
+          "rating": {
+            "format": "float",
+            "description": "Rating must be between 0 and 5",
+            "type": "number"
+          },
+          "comments": {
+            "type": "string",
+            "description": "Optional comments about the doctor"
+          }
+        }
       }
     }
   }

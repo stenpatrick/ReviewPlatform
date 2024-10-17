@@ -1,4 +1,5 @@
-const port = 3000;
+require("dotenv").config();
+const port = process.env.PORT || 3000;
 const host = 'localhost';
 const express = require("express");
 const app = express();
@@ -25,6 +26,15 @@ let comments = [
     { id: 2, comment: "Needs improvement", doctorId: 2, userId: 2 }
 ];
 
+const { db, sync} = require("./db");
+
+app.get("/doctors", async (req, res) => {
+    const doctors = await db.doctors.findAll();
+    res.send(doctors.map(({ id, name, rating, comments }) => {
+        return { id, name, rating, comments };
+    }));
+});
+
 app.post("/doctors", (req, res) => {
     if (!req.body.name || req.body.name.trim().length === 0) {
         return res.status(400).send({ error: "Missing required field 'name'" });
@@ -42,6 +52,7 @@ app.post("/doctors", (req, res) => {
         contact: req.body.contact || "" 
     };
 
+    const bornDoctor = db.doctors.create(newDoctor);
     doctors.push(newDoctor);
     res.status(201)
         .location(`${getBaseUrl(req)}/doctors/${newDoctor.id}`)
@@ -82,8 +93,11 @@ app.delete("/doctors/:id", (req, res) => {
     return res.status(204).send();
 });
 
-app.listen(port, () => {
-    console.log(`API up at: http://${host}:${port}`);
+app.listen(port, async() => {
+    if(process.env.SYNC === "true") {
+        await sync();
+    }
+    console.log(`DR. API up at: http://${host}:${port}`);
 });
 
 function getBaseUrl(req) {
@@ -101,7 +115,7 @@ function getDoctor(req, res) {
         res.status(400).send({ error: `ID must be a whole number: ${req.params.id}` });
         return null;
     }
-    const doctor = doctors.find(g => g.id === idNumber);
+    const doctor = await db.doctors.findByPk(g => g.id === idNumber);
     if (!doctor) {
         res.status(404).send({ error: `Doctor Not Found!` });
         return null;

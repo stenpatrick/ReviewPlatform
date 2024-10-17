@@ -1,4 +1,5 @@
-const port = 8080;
+require("dotenv").config();
+const port = process.env.PORT || 3000;
 const host = 'localhost';
 const express = require("express");
 const app = express();
@@ -81,6 +82,7 @@ app.delete("/doctors/:id", (req, res) => {
 });
 
 app.listen(port, () => {
+    require("./db")
     console.log(`API up at: http://${host}:${port}`);
 });
 

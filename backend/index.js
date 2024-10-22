@@ -28,13 +28,19 @@ let comments = [
 
 const { db, sync} = require("./db");
 
-app.get("/doctors", async (req, res) => {
-    const doctors = await db.doctors.findAll();
-    res.send(doctors.map(({ id, name, rating, comments }) => {
-        return { id, name, rating, comments };
-    }));
+// Add Doctors endpoint
+app.get("/doctors", (req, res) => {
+    res.send(doctors);
 });
 
+// Get a doctor by ID
+app.get("/doctors/:id", (req, res) => {
+    const doctor = getContent(doctors, req, res);
+    if (!doctor) { return; }
+    return res.send(doctor);
+});
+
+// Create a new doctor
 app.post("/doctors", (req, res) => {
     if (!req.body.name || req.body.name.trim().length === 0) {
         return res.status(400).send({ error: "Missing required field 'name'" });
@@ -52,46 +58,32 @@ app.post("/doctors", (req, res) => {
         contact: req.body.contact || "" 
     };
 
-    const bornDoctor = db.doctors.create(newDoctor);
     doctors.push(newDoctor);
-    res.status(201)
-        .location(`${getBaseUrl(req)}/doctors/${newDoctor.id}`)
-        .send(newDoctor);
+    res.status(201).send(newDoctor);
 });
 
-app.get("/doctors/:id", (req, res) => {
-    const doctor = getContent(doctors, req, res);
-    if (!doctor) { return; }
-    return res.send(doctor);
-});
-
+// Update a doctor by ID
 app.put("/doctors/:id", (req, res) => {
     const doctor = getContent(doctors, req, res);
     if (!doctor) { return; }
-    if (!req.body.name || req.body.name.trim().length === 0) {
-        return res.status(400).send({ error: "Missing required field 'name'" });
-    }
-
-    const newRating = parseFloat(req.body.rating);
-    if (newRating < 0 || newRating > 5) {
-        return res.status(400).send({ error: "Rating must be between 0 and 5" });
+    if (!req.body.name || !req.body.contact) {
+        return res.status(400).send({ error: "Missing required fields 'name' and 'contact'" });
     }
 
     doctor.name = req.body.name;
-    doctor.rating = isNaN(newRating) ? null : newRating;
-    doctor.contact = req.body.contact || ""; // Update contact details
+    doctor.contact = req.body.contact; // Update contact details
 
-    return res
-        .location(`${getBaseUrl(req)}/doctors/${doctor.id}`)
-        .send(doctor);
+    return res.send(doctor);
 });
 
+// Delete a doctor by ID
 app.delete("/doctors/:id", (req, res) => {
     const doctor = getContent(doctors, req, res);
     if (!doctor) { return; }
     doctors.splice(doctors.indexOf(doctor), 1);
     return res.status(204).send();
 });
+
 
 app.listen(port, async() => {
     if(process.env.SYNC === "true") {

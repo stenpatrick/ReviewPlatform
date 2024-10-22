@@ -210,7 +210,7 @@ function getContent(ContentOrigin, req, res) {
         return null;
     }
     ContentOrigin = ContentOrigin.find(g => g.id === idNumber);
-    if (!Table) {
+    if (!ContentOrigin) {
         res.status(404).send({ error: `User Not Found!` });
         return null;
     }

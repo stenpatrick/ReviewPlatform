@@ -27,7 +27,7 @@ db.comments = require("./models/Comment")(sequelize, DataTypes);
 
 
 const sync =(async () => {
-  await sequelize.sync({ alter: true });
+  await sequelize.sync({ force: true });
 console.log('All models were synchronized successfully.');
 });
 

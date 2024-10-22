@@ -60,13 +60,13 @@ app.post("/doctors", (req, res) => {
 });
 
 app.get("/doctors/:id", (req, res) => {
-    const doctor = getDoctor(req, res);
+    const doctor = getContent(doctors, req, res);
     if (!doctor) { return; }
     return res.send(doctor);
 });
 
 app.put("/doctors/:id", (req, res) => {
-    const doctor = getDoctor(req, res);
+    const doctor = getContent(doctors, req, res);
     if (!doctor) { return; }
     if (!req.body.name || req.body.name.trim().length === 0) {
         return res.status(400).send({ error: "Missing required field 'name'" });
@@ -87,7 +87,7 @@ app.put("/doctors/:id", (req, res) => {
 });
 
 app.delete("/doctors/:id", (req, res) => {
-    const doctor = getDoctor(req, res);
+    const doctor = getContent(doctors, req, res);
     if (!doctor) { return; }
     doctors.splice(doctors.indexOf(doctor), 1);
     return res.status(204).send();
@@ -104,24 +104,6 @@ function getBaseUrl(req) {
     return (req.connection && req.connection.encrypted ? 'https' : 'http') + `://${req.headers.host}`;
 }
 
-function createId() {
-    const maxIdDoctor = doctors.reduce((prev, current) => (prev.id > current.id) ? prev : current, { id: 0 });
-    return maxIdDoctor.id + 1;
-}
-
-function getDoctor(req, res) {
-    const idNumber = parseInt(req.params.id);
-    if (isNaN(idNumber)) {
-        res.status(400).send({ error: `ID must be a whole number: ${req.params.id}` });
-        return null;
-    }
-    const doctor = db.doctors.findByPk(g => g.id === idNumber);
-    if (!doctor) {
-        res.status(404).send({ error: `Doctor Not Found!` });
-        return null;
-    }
-    return doctor;
-}
 
 // Add Users endpoint
 app.get("/users", (req, res) => {
@@ -130,7 +112,7 @@ app.get("/users", (req, res) => {
 
 // Get a user by ID
 app.get("/users/:id", (req, res) => {
-    const user = getUser(req, res);
+    const user = getContent(users, req, res);
     if (!user) { return; }
     return res.send(user);
 });
@@ -153,7 +135,7 @@ app.post("/users", (req, res) => {
 
 // Update a user by ID
 app.put("/users/:id", (req, res) => {
-    const user = getUser(req, res);
+    const user = getContent(users, req, res);
     if (!user) { return; }
     if (!req.body.name || !req.body.contact) {
         return res.status(400).send({ error: "Missing required fields 'name' and 'contact'" });
@@ -167,7 +149,7 @@ app.put("/users/:id", (req, res) => {
 
 // Delete a user by ID
 app.delete("/users/:id", (req, res) => {
-    const user = getUser(req, res);
+    const user = getContent(users, req, res);
     if (!user) { return; }
     users.splice(users.indexOf(user), 1);
     return res.status(204).send();
@@ -210,53 +192,35 @@ app.post("/comments", (req, res) => {
 });
 
 app.get("/comments/:id", (req, res) => {
-    const comment = getComment(req, res);
+    const comment = getContent(comments, req, res);
     if (!comment) { return; }
     return res.send(comment);
 });
 
 app.delete("/comments/:id", (req, res) => {
-    const comment = getComment(req, res);
+    const comment = getContent(comments, req, res);
     if (!comment) { return; }
     comments.splice(comments.indexOf(comment), 1);
     return res.status(204).send();
 });
 
 
-// Function to generate unique user ID
 function CreateId(Table) {
     const MaxId = Table.reduce((prev, current) => (prev.id > current.id) ? prev : current, { id: 0 });
     return MaxId.id + 1;
 }
 
 
-function getUser(req, res) {
+function getContent(ContentOrigin, req, res) {
     const idNumber = parseInt(req.params.id);
     if (isNaN(idNumber)) {
         res.status(400).send({ error: `ID must be a whole number: ${req.params.id}` });
         return null;
     }
-    const user = users.find(g => g.id === idNumber);
-    if (!user) {
+    ContentOrigin = ContentOrigin.find(g => g.id === idNumber);
+    if (!Table) {
         res.status(404).send({ error: `User Not Found!` });
         return null;
     }
-    return user;
+    return ContentOrigin;
 }
-
-
-// Function to get a Comment by ID
-function getComment(req, res) {
-    const idNumber = parseInt(req.params.id);
-    if (isNaN(idNumber)) {
-        res.status(400).send({ error: `ID must be a whole number: ${req.params.id}` });
-        return null;
-    }
-    const comment = comments.find(g => g.id === idNumber); // Corrected: Use 'comments' instead of 'Comments'
-    if (!comment) {
-        res.status(404).send({ error: `Comment Not Found!` });
-        return null;
-    }
-    return comment;
-}
-

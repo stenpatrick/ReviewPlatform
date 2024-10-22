@@ -46,7 +46,7 @@ app.post("/doctors", (req, res) => {
     }
 
     const newDoctor = {
-        id: createId(),
+        id: CreateId(doctors),
         name: req.body.name,
         rating: isNaN(newRating) ? null : newRating,
         contact: req.body.contact || "" 
@@ -142,7 +142,7 @@ app.post("/users", (req, res) => {
     }
 
     const newUser = {
-        id: createUserId(),
+        id: CreateId(users),
         name: req.body.name,
         contact: req.body.contact,
     };
@@ -199,7 +199,7 @@ app.post("/comments", (req, res) => {
     }
 
     const newComment = {
-        id: createCommentId(),
+        id: CreateId(comments),
         comment: comment,
         doctorId: parseInt(doctorId),
         userId: parseInt(userId),
@@ -222,15 +222,11 @@ app.delete("/comments/:id", (req, res) => {
     return res.status(204).send();
 });
 
-function createCommentId() {
-    const maxIdComment = comments.reduce((prev, current) => (prev.id > current.id) ? prev : current, { id: 0 });
-    return maxIdComment.id + 1;
-}
 
 // Function to generate unique user ID
-function createUserId() {
-    const maxIdUser = users.reduce((prev, current) => (prev.id > current.id) ? prev : current, { id: 0 });
-    return maxIdUser.id + 1;
+function CreateId(Table) {
+    const MaxId = Table.reduce((prev, current) => (prev.id > current.id) ? prev : current, { id: 0 });
+    return MaxId.id + 1;
 }
 
 

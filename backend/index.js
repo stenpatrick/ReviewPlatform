@@ -5,7 +5,8 @@ const express = require("express");
 const app = express();
 const swaggerUi = require("swagger-ui-express");
 const swaggerDoc = require("./swagger.json");
-
+const cors = require('cors')
+app.use(cors())
 app.use(express.json());
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
@@ -13,8 +14,8 @@ app.get("/", (req, res) => {
     res.send(`Server running. Docs at <a href="http://${host}:${port}/docs">/docs</a>`);
 });
 
-let doctors = [
-    { id: 1, name: "Jane Doe", rating: 3, contact: "" },
+const doctors = [
+    { id: 1, name: "Jane Doe", rating: 3, contact: "janedoe@gmail.com" },
     { id: 2, name: "Joe Doe", rating: 5, contact: "" },
 ];
 let users = [

@@ -55,7 +55,6 @@
         </div>
     </div>
 
-    
     <h1>Users</h1>
     <table id="usersTable" class="table table-striped table-bordered">
         <thead>
@@ -94,6 +93,53 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="userInModal = null">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Comments</h1>
+    <table id="commentsTable" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Comment</th>
+                <th>UserId</th>
+                <th>DoctorId</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr v-for="comment in comments" :key="comment.id">
+                <td @click="showCommentDetails(comment)">{{ comment.Comment }}</td>
+                <td>{{ comment.UserId }}</td>
+                <td>{{ comment.DoctorId }}</td>
+                <td>
+                    <button @click="editComment(comment)" class="btn btn-primary btn-sm">Edit</button>
+                    <button @click="deleteComment(comment.id)" class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Comment Info Modal -->
+    <div class="modal" tabindex="-1" v-if="commentInModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Comment Info</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" @click="commentInModal = null"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <tr><th>ID</th><td>{{ commentInModal.id }}</td></tr>
+                        <tr><th>Comment</th><td>{{ commentInModal.comment }}</td></tr>
+                        <tr><th>UserId</th><td>{{ commentInModal.UserId }}</td></tr>
+                        <tr><th>DoctorId</th><td>{{ commentInModal.DoctorId }}</td></tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="commentInModal = null">Close</button>
                 </div>
             </div>
         </div>

@@ -14,9 +14,9 @@ app.get("/", (req, res) => {
     res.send(`Server running. Docs at <a href="http://${host}:${port}/docs">/docs</a>`);
 });
 
-const doctors = [
+let doctors = [
     { id: 1, name: "Jane Doe", rating: 3, contact: "janedoe@gmail.com" },
-    { id: 2, name: "Joe Doe", rating: 5, contact: "" },
+    { id: 2, name: "Joe Doe", rating: 5, contact: "+372 5823 7254" },
 ];
 let users = [
     { id: 1, name: "User1", contact: "user1@example.com" },
@@ -31,14 +31,14 @@ const { db, sync} = require("./db");
 
 // Add Doctors endpoint
 app.get("/doctors", (req, res) => {
-    res.send(doctors);
+    res.json(doctors);
 });
 
 // Get a doctor by ID
 app.get("/doctors/:id", (req, res) => {
-    const doctor = getContent(doctors, req, res);
-    if (!doctor) { return; }
-    return res.send(doctor);
+    const doctor = doctors.find(d => d.id === parseInt(req.params.id));
+    if (!doctor) return res.status(404).send({ error: 'Doctor not found' });
+    res.json(doctor);
 });
 
 // Create a new doctor

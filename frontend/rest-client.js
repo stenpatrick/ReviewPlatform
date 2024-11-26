@@ -1,72 +1,130 @@
-const vue = Vue.createApp({
+const app = Vue.createApp({
     data() {
         return {
-            newDoctor: {
-                name: '',
-                rating: 0,
-                contact: ''
-            },
-            doctorInModal: { name: null, rating: null, contact: null }, // Initialize properties properly
-            doctors: []
+            doctors: [],
+            doctorInModal: null,
+            users: [],
+            userInModal: null
         };
     },
-    async created() {
-        // Fetch doctors when the app is created
-        try {
-            const response = await fetch('http://127.0.0.1:8080/doctors');
-            if (!response.ok) throw new Error('Failed to fetch doctors');
-            this.doctors = await response.json();
-        } catch (error) {
-            console.error("Error fetching doctors:", error);
-        }
+    mounted() {
+        this.fetchDoctors();
+        this.fetchUsers();
     },
     methods: {
-        // Fetch doctor details and show in the modal
-        getItem: async function (item, id) {
+        async fetchDoctors() {
             try {
-
-                const response = await fetch(`http://127.0.0.1:8080/${item}/${id}`);
-                if (!response.ok) throw new Error(`Failed to fetch ${item} details`);
-                
-                if (item === 'doctor') {
-                    this.doctorInModal = await response.json();  // For doctor details
-                } else if (item === 'user') {
-                    this.userInModal = await response.json();  // For user details
+                const response = await fetch('http://localhost:8080/doctors');
+                if (response.ok) {
+                    this.doctors = await response.json();
+                } else {
+                    console.error('Failed to fetch doctors');
                 }
-                                
-                // Initialize Bootstrap modal and show it
-                const modal = new bootstrap.Modal(document.getElementById(`${item}InfoModal`));
-                modal.show();
             } catch (error) {
-                console.error("Error fetching %s details:", item, error);
+                console.error('Error fetching doctors:', error);
             }
         },
-
-        // Add new doctor function
-        addDoctor: async function (item) {
-            try {
-                // Make sure name and rating are valid before making the POST request
-                    if (!this.newDoctor.name || this.newDoctor.rating < 0 || this.newDoctor.rating > 5) {
-                        alert("Please provide valid doctor details.");
-                        return;
-                    }
-    
-                    const response = await fetch('http://127.0.0.1:8080/doctors', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(this.newDoctor)
+        showDoctorDetails(doctor) {
+            this.doctorInModal = doctor;
+        },
+        async editDoctor(doctor) {
+            const newName = prompt('Enter new name for the doctor', doctor.name);
+            const newContact = prompt('Enter new contact for the doctor', doctor.contact);
+            const newRating = prompt('Enter new rating for the user', user.contact);
+            if (newName && newContact && newRating) {
+                const updatedDoctor = {
+                    name: newName,
+                    contact: newContact,
+                    rating: newRating
+                };
+                try {
+                    const response = await fetch(`http://localhost:8080/doctors/${doctor.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedDoctor)
                     });
-    
-                    if (!response.ok) throw new Error('Failed to add doctor');
-    
-                    const newDoctor = await response.json();
-                    this.doctors.push(newDoctor);  // Add the new doctor to the list
-                    this.newDoctor = { name: '', rating: 0, contact: '' }; // Reset the form
+                    if (response.ok) {
+                        this.fetchDoctors(); // Refresh the doctor list
+                    } else {
+                        console.error('Failed to update doctor');
+                    }
+                } catch (error) {
+                    console.error('Error updating doctor:', error);
+                }
+            }
+        },
+        async deleteDoctor(id) {
+            if (confirm('Are you sure you want to delete this doctor?')) {
+                try {
+                    const response = await fetch(`http://localhost:8080/doctors/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        this.fetchDoctors(); // Refresh the doctor list
+                    } else {
+                        console.error('Failed to delete doctor');
+                    }
+                } catch (error) {
+                    console.error('Error deleting doctor:', error);
+                }
+            }
+        },
+        async fetchUsers() {
+            try {
+                const response = await fetch('http://localhost:8080/users');
+                if (response.ok) {
+                    this.users = await response.json();
+                } else {
+                    console.error('Failed to fetch users');
+                }
             } catch (error) {
-                console.error("Error adding:", item, error);
+                console.error('Error fetching users:', error);
+            }
+        },
+        showUserDetails(user) {
+            this.userInModal = user;
+        },
+        async editUser(user) {
+            const newName = prompt('Enter new name for the user', user.name);
+            const newContact = prompt('Enter new contact for the user', user.contact);
+            if (newName && newContact) {
+                const updatedUser = {
+                    name: newName,
+                    contact: newContact
+                };
+                try {
+                    const response = await fetch(`http://localhost:8080/users/${user.id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(updatedUser)
+                    });
+                    if (response.ok) {
+                        this.fetchUsers(); // Refresh the user list
+                    } else {
+                        console.error('Failed to update user');
+                    }
+                } catch (error) {
+                    console.error('Error updating user:', error);
+                }
+            }
+        },
+        async deleteUser(id) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                try {
+                    const response = await fetch(`http://localhost:8080/users/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        this.fetchUsers(); // Refresh the user list
+                    } else {
+                        console.error('Failed to delete user');
+                    }
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                }
             }
         }
     }
-}).mount('#app');
+});
+
+app.mount('#app');

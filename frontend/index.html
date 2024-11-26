@@ -54,81 +54,54 @@
             </div>
         </div>
     </div>
+
+    
+    <h1>Users</h1>
+    <table id="usersTable" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="user in users" :key="user.id">
+                <td @click="showUserDetails(user)">{{ user.name }}</td>
+                <td>{{ user.contact }}</td>
+                <td>
+                    <button @click="editUser(user)" class="btn btn-primary btn-sm">Edit</button>
+                    <button @click="deleteUser(user.id)" class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- User Info Modal -->
+    <div class="modal" tabindex="-1" v-if="userInModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">User Info</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" @click="userInModal = null"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-striped">
+                        <tr><th>ID</th><td>{{ userInModal.id }}</td></tr>
+                        <tr><th>Name</th><td>{{ userInModal.name }}</td></tr>
+                        <tr><th>Contact</th><td>{{ userInModal.contact }}</td></tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="userInModal = null">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    const app = Vue.createApp({
-        data() {
-            return {
-                doctors: [],
-                doctorInModal: null
-            };
-        },
-        mounted() {
-            this.fetchDoctors();
-        },
-        methods: {
-            async fetchDoctors() {
-                try {
-                    const response = await fetch('http://localhost:8080/doctors');
-                    if (response.ok) {
-                        this.doctors = await response.json();
-                    } else {
-                        console.error('Failed to fetch doctors');
-                    }
-                } catch (error) {
-                    console.error('Error fetching doctors:', error);
-                }
-            },
-            showDoctorDetails(doctor) {
-                this.doctorInModal = doctor;
-            },
-            async editDoctor(doctor) {
-                const newName = prompt('Enter new name for the doctor', doctor.name);
-                const newContact = prompt('Enter new contact for the doctor', doctor.contact);
-                if (newName && newContact) {
-                    const updatedDoctor = {
-                        name: newName,
-                        contact: newContact
-                    };
-                    try {
-                        const response = await fetch(`http://localhost:8080/doctors/${doctor.id}`, {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(updatedDoctor)
-                        });
-                        if (response.ok) {
-                            this.fetchDoctors(); // Refresh the doctor list
-                        } else {
-                            console.error('Failed to update doctor');
-                        }
-                    } catch (error) {
-                        console.error('Error updating doctor:', error);
-                    }
-                }
-            },
-            async deleteDoctor(id) {
-                if (confirm('Are you sure you want to delete this doctor?')) {
-                    try {
-                        const response = await fetch(`http://localhost:8080/doctors/${id}`, {
-                            method: 'DELETE'
-                        });
-                        if (response.ok) {
-                            this.fetchDoctors(); // Refresh the doctor list
-                        } else {
-                            console.error('Failed to delete doctor');
-                        }
-                    } catch (error) {
-                        console.error('Error deleting doctor:', error);
-                    }
-                }
-            }
-        }
-    });
-
-    app.mount('#app');
-</script>
+<script src="rest-client.js"></script>
 </body>
 </html>

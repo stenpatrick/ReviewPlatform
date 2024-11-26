@@ -1,18 +1,72 @@
-    const vue = Vue.createApp({
-        data() {
-            return { 
-                doctorInModal: {name: null},
-                doctors: []
+const vue = Vue.createApp({
+    data() {
+        return {
+            newDoctor: {
+                name: '',
+                rating: 0,
+                contact: ''
+            },
+            doctorInModal: { name: null, rating: null, contact: null }, // Initialize properties properly
+            doctors: []
+        };
+    },
+    async created() {
+        // Fetch doctors when the app is created
+        try {
+            const response = await fetch('http://127.0.0.1:8080/doctors');
+            if (!response.ok) throw new Error('Failed to fetch doctors');
+            this.doctors = await response.json();
+        } catch (error) {
+            console.error("Error fetching doctors:", error);
+        }
+    },
+    methods: {
+        // Fetch doctor details and show in the modal
+        getItem: async function (item, id) {
+            try {
+
+                const response = await fetch(`http://127.0.0.1:8080/${item}/${id}`);
+                if (!response.ok) throw new Error(`Failed to fetch ${item} details`);
+                
+                if (item === 'doctor') {
+                    this.doctorInModal = await response.json();  // For doctor details
+                } else if (item === 'user') {
+                    this.userInModal = await response.json();  // For user details
+                }
+                                
+                // Initialize Bootstrap modal and show it
+                const modal = new bootstrap.Modal(document.getElementById(`${item}InfoModal`));
+                modal.show();
+            } catch (error) {
+                console.error("Error fetching %s details:", item, error);
             }
         },
-        async created() {
-            this.doctors = await (await fetch('http://127.0.0.1:8080/doctors')).json();
-        },
-        methods: {
-            getDoctor: async function (id) {
-                this.doctorInModal = await (await fetch ('http://127.0.0.1:8080/doctors/${id}')).json()
-                let doctorInModal = new bootstrap.Modal(document.getElementById('doctorInfoModal'), {})
-                doctorInfoModal.show()
+
+        // Add new doctor function
+        addDoctor: async function (item) {
+            try {
+                // Make sure name and rating are valid before making the POST request
+                    if (!this.newDoctor.name || this.newDoctor.rating < 0 || this.newDoctor.rating > 5) {
+                        alert("Please provide valid doctor details.");
+                        return;
+                    }
+    
+                    const response = await fetch('http://127.0.0.1:8080/doctors', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(this.newDoctor)
+                    });
+    
+                    if (!response.ok) throw new Error('Failed to add doctor');
+    
+                    const newDoctor = await response.json();
+                    this.doctors.push(newDoctor);  // Add the new doctor to the list
+                    this.newDoctor = { name: '', rating: 0, contact: '' }; // Reset the form
+            } catch (error) {
+                console.error("Error adding:", item, error);
             }
         }
-    }).mount('#app')
+    }
+}).mount('#app');

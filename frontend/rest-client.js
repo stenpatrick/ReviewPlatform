@@ -22,45 +22,50 @@ const vue = Vue.createApp({
     },
     methods: {
         // Fetch doctor details and show in the modal
-        getDoctor: async function (id) {
+        getItem: async function (item, id) {
             try {
-                const response = await fetch(`http://127.0.0.1:8080/doctors/${id}`);
-                if (!response.ok) throw new Error('Failed to fetch doctor details');
+
+                const response = await fetch(`http://127.0.0.1:8080/${item}/${id}`);
+                if (!response.ok) throw new Error(`Failed to fetch ${item} details`);
                 
-                this.doctorInModal = await response.json();
-                
+                if (item === 'doctor') {
+                    this.doctorInModal = await response.json();  // For doctor details
+                } else if (item === 'user') {
+                    this.userInModal = await response.json();  // For user details
+                }
+                                
                 // Initialize Bootstrap modal and show it
-                const modal = new bootstrap.Modal(document.getElementById('doctorInfoModal'));
+                const modal = new bootstrap.Modal(document.getElementById(`${item}InfoModal`));
                 modal.show();
             } catch (error) {
-                console.error("Error fetching doctor details:", error);
+                console.error("Error fetching %s details:", item, error);
             }
         },
 
         // Add new doctor function
-        addDoctor: async function () {
+        addDoctor: async function (item) {
             try {
                 // Make sure name and rating are valid before making the POST request
-                if (!this.newDoctor.name || this.newDoctor.rating < 0 || this.newDoctor.rating > 5) {
-                    alert("Please provide valid doctor details.");
-                    return;
-                }
-
-                const response = await fetch('http://127.0.0.1:8080/doctors', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(this.newDoctor)
-                });
-
-                if (!response.ok) throw new Error('Failed to add doctor');
-
-                const newDoctor = await response.json();
-                this.doctors.push(newDoctor);  // Add the new doctor to the list
-                this.newDoctor = { name: '', rating: 0, contact: '' }; // Reset the form
+                    if (!this.newDoctor.name || this.newDoctor.rating < 0 || this.newDoctor.rating > 5) {
+                        alert("Please provide valid doctor details.");
+                        return;
+                    }
+    
+                    const response = await fetch('http://127.0.0.1:8080/doctors', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(this.newDoctor)
+                    });
+    
+                    if (!response.ok) throw new Error('Failed to add doctor');
+    
+                    const newDoctor = await response.json();
+                    this.doctors.push(newDoctor);  // Add the new doctor to the list
+                    this.newDoctor = { name: '', rating: 0, contact: '' }; // Reset the form
             } catch (error) {
-                console.error("Error adding doctor:", error);
+                console.error("Error adding:", item, error);
             }
         }
     }

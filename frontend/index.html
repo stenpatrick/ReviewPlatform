@@ -111,9 +111,9 @@
         <tbody>
 
             <tr v-for="comment in comments" :key="comment.id">
-                <td @click="showCommentDetails(comment)">{{ comment.Comment }}</td>
-                <td>{{ comment.UserId }}</td>
-                <td>{{ comment.DoctorId }}</td>
+                <td @click="showCommentDetails(comment)">{{ comment.comment }}</td>
+                <td>{{ comment.userId }}</td>
+                <td>{{ comment.doctorId }}</td>
                 <td>
                     <button @click="editComment(comment)" class="btn btn-primary btn-sm">Edit</button>
                     <button @click="deleteComment(comment.id)" class="btn btn-danger btn-sm">Delete</button>

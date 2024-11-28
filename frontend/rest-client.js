@@ -30,34 +30,36 @@ const app = Vue.createApp({
         showDoctorDetails(doctor) {
             this.doctorInModal = doctor;
         },
-        async addDoctor (doctor) {
-            const newName = prompt('Enter new name for the doctor', doctor.name);
-            const newContact = prompt('Enter new contact for the doctor', doctor.contact);
-            const newRating = prompt('Enter new rating for the user', user.contact);
+        async addDoctor () {
+            const newName = prompt('Enter new name for the doctor');
+            const newContact = prompt('Enter new contact for the doctor');
+            const newRating = prompt('Enter new rating for the doctor');
+            
             if (newName && newContact && newRating) {
                 const newDoctor = {
                     name: newName,
                     contact: newContact,
                     rating: newRating
                 };
+        
                 try {
-
-                const response = await fetch(`http://localhost:8080/doctors/`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newDoctor)
-                });
-    
+                    const response = await fetch(`http://localhost:8080/doctors/`, {
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newDoctor)
+                    });
+        
                     if (!response.ok) throw new Error('Failed to add doctor');
-    
-                    const newDoctor = await response.json();
-                    this.doctors.push(newDoctor);  // Add the new doctor to the list
-                    this.newDoctor = { name: '', rating: 0, contact: '' }; // Reset the form
+        
+                    const addedDoctor = await response.json();
+                    this.doctors.push(addedDoctor); 
                 } catch (error) {
-                    console.error("Error adding:", doctor, error);
+                    console.error("Error adding doctor:", error);
                 }
+            } else {
+                console.log("All fields are required.");
             }
-        },
+        },        
         async editDoctor(doctor) {
             const newName = prompt('Enter new name for the doctor', doctor.name);
             const newContact = prompt('Enter new contact for the doctor', doctor.contact);
@@ -115,32 +117,34 @@ const app = Vue.createApp({
         showUserDetails(user) {
             this.userInModal = user;
         },
-        async addUser (user) {
-            const newName = prompt('Enter new name for the user', user.name);
-            const newContact = prompt('Enter new contact for the user', user.contact);
+        async addUser () {
+            const newName = prompt('Enter new name for the user');
+            const newContact = prompt('Enter new contact for the user');
+            
             if (newName && newContact) {
                 const newUser = {
                     name: newName,
                     contact: newContact,
                 };
-                try {
         
-                const response = await fetch(`http://localhost:8080/users/`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newUser)
-                });
+                try {
+                    const response = await fetch(`http://localhost:8080/users/`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newUser)
+                    });
         
                     if (!response.ok) throw new Error('Failed to add user');
         
-                    const newUser = await response.json();
-                    this.users.push(newUser);  // Add the new user to the list
-                    this.newUser = { name: '', contact: '' }; // Reset the form
+                    const addedUser = await response.json(); 
+                    this.users.push(addedUser); 
                 } catch (error) {
-                    console.error("Error adding:", user, error);
+                    console.error("Error adding user:", error);
                 }
+            } else {
+                console.log("Both name and contact are required.");
             }
-        },
+        },        
         async editUser(user) {
             const newName = prompt('Enter new name for the user', user.name);
             const newContact = prompt('Enter new contact for the user', user.contact);
@@ -196,34 +200,40 @@ const app = Vue.createApp({
         showCommentDetails(comment) {
             this.commentInModal = comment;
         },
-        async addComment (comment) {
-            const newComment = prompt('Enter new name for the comment', comment.name);
-            const newuserId = prompt('Enter the person who commented id', comment.userId);
-            const newdoctorId = prompt('Enter the person who commented id', comment.doctorId);
-            if (newComment && newuserId && newdoctorId) {
+        async addComment () {
+            // Prompt user for comment details
+            const newCommentText = prompt('Enter the new comment text');
+            const newUserId = prompt('Enter the ID of the user who commented');
+            const newDoctorId = prompt('Enter the ID of the doctor being commented on');
+            
+            // If all fields are filled, proceed with the addition
+            if (newCommentText && newUserId && newDoctorId) {
                 const newComment = {
-                    comment: newComment,
-                    userId: newuserId,
-                    doctorId: newdoctorId,
+                    comment: newCommentText,
+                    userId: newUserId,
+                    doctorId: newDoctorId,
                 };
-                try {
         
-                const response = await fetch(`http://localhost:8080/comments/`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newComment)
-                });
+                try {
+                    // Make a POST request to add the new comment
+                    const response = await fetch(`http://localhost:8080/comments/`, {
+                        method: 'POST',  // Use POST for adding new data
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newComment)
+                    });
         
                     if (!response.ok) throw new Error('Failed to add comment');
         
-                    const newComment = await response.json();
-                    this.comments.push(newComment);  // Add the new comment to the list
-                    this.newComment = { name: '', rating: 0, contact: '' }; // Reset the form
+                    const addedComment = await response.json();  // Get the added comment from the response
+                    this.comments.push(addedComment);  // Add the new comment to the list of comments
+        
                 } catch (error) {
-                    console.error("Error adding:", comment, error);
+                    console.error("Error adding comment:", error);
                 }
+            } else {
+                console.log("All fields are required.");
             }
-        },
+        },        
         async editComment(comment) {
             const newComment = prompt('Enter new name for the comment', comment.name);
             const newuserId = prompt('Enter the person who commented id', comment.userId);

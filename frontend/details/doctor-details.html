@@ -9,24 +9,95 @@
 <body>
     <div id="navbar-container"></div>
 
-    <div id="app" class="container mt-4">
+    <div class="container mt-4">
         <h1>Doctor Details</h1>
-        <div v-if="doctor">
-            <h3>{{ doctor.name }}</h3>
-            <p><strong>Specialty:</strong> {{ doctor.speciality }}</p>
-            <p><strong>Description:</strong> {{ doctor.description }}</p>
-            <p><strong>Rating:</strong> {{ doctor.rating }}</p>
-            <p><strong>Contact:</strong> {{ doctor.contact }}</p>
-        </div>
-        <div v-else>
-            <p>Loading doctor details...</p>
+        <div id="doctor-details"></div>
+        
+        <div id="comments-section"></div>
+
+        <!-- Add Comment Form -->
+        <div class="mt-4">
+            <h5>Add a Comment</h5>
+            <div class="form-group">
+                <textarea id="commentInput" class="form-control" placeholder="Write a comment" rows="3"></textarea>
+            </div>
+            <button id="submitComment" class="btn btn-primary mt-2">Submit Comment</button>
         </div>
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="../backend/rest-client.js"></script>
     <script>
-        loadNavbar();
+        const doctorId = getDoctorIdFromURL(); // Get the doctor ID from the URL
+        let comments = []; // Initialize an array to hold comments
+
+        // Fetch doctor details and comments when the page loads
+        fetchDoctorDetails(doctorId).then(data => {
+            const detailsDiv = document.getElementById('doctor-details');
+            if (data) {
+                detailsDiv.innerHTML = `
+                    <h3>${data.name}</h3>
+                    <p><strong>Specialty:</strong> ${data.speciality}</p>
+                    <p><strong>Description:</strong> ${data.description}</p>
+                    <p><strong>Rating:</strong> ${data.rating}</p>
+                    <p><strong>Contact:</strong> ${data.contact}</p>
+                    <p><strong>Doctor ID:</strong> ${doctorId}</p> <!-- Displaying doctorId -->
+                `;
+                
+                // Fetch comments for this doctor
+                fetchCommentsByDoctor(doctorId).then(() => {
+                    displayComments();
+                });
+            } else {
+                detailsDiv.innerHTML = '<p>No details available.</p>';
+            }
+        });
+
+        // Function to fetch comments from the server
+        async function fetchCommentsByDoctor(doctorId) {
+            try {
+                const response = await fetch(`http://localhost:8080/comments?doctorId=${doctorId}`);
+                if (response.ok) {
+                    comments = await response.json(); // Store fetched comments in the global array
+                } else {
+                    console.error('Failed to fetch comments');
+                }
+            } catch (error) {
+                console.error('Error fetching comments:', error);
+            }
+        }
+
+        // Function to display comments on the page
+        function displayComments() {
+            const commentsSection = document.getElementById('comments-section');
+            commentsSection.innerHTML = ''; // Clear existing comments
+
+            if (comments.length === 0) {
+                commentsSection.innerHTML = '<p>No comments available.</p>';
+                return;
+            }
+
+            comments.forEach(comment => {
+                const commentDiv = document.createElement('div');
+                commentDiv.className = 'comment';
+                commentDiv.innerHTML = `<p>${comment.name}, ${comment.comment}</p>`; // Assuming comment has a 'text' property
+                commentsSection.appendChild(commentDiv);
+            });
+        }
+
+        // Event listener for adding comments
+        document.getElementById('submitComment').addEventListener('click', () => {
+            const commentInput = document.getElementById('commentInput');
+            const commentText = commentInput.value.trim();
+            if (commentText) {
+                addComment(commentText, doctorId).then(() => { // Assuming addComment takes text and doctorId
+                    commentInput.value = ''; // Clear the input
+                    fetchCommentsByDoctor(doctorId).then(() => displayComments()); // Refresh the comments after adding a new one
+                });
+            }
+        });
+
+        loadNavbar(); // Assuming this function loads the navbar
     </script>
 </body>
 </html>

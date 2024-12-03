@@ -2,6 +2,7 @@ const app = Vue.createApp({
     data() {
         return {
             doctors: [],
+            filteredComments: [],
             doctor: null,
             doctorInModal: null,
             users: [],
@@ -10,17 +11,22 @@ const app = Vue.createApp({
             commentInModal: null
         };
     },
-        mounted() {
+    mounted() {
         const doctorId = getDoctorIdFromURL(); // Get the doctor ID from the URL
         if (doctorId) {
             fetchDoctorDetails(doctorId).then(doctor => {
                 this.doctor = doctor;
+    
+                // Once the doctor details are fetched, filter the comments for this doctor
+                this.DoctorFilterComments(doctorId);
             });
         }
         this.fetchDoctors();
         this.fetchUsers();
         this.fetchComments();
     },
+    
+    
     methods: {
         async fetchDoctors() {
             try {
@@ -204,7 +210,26 @@ const app = Vue.createApp({
             } catch (error) {
                 console.error('Error fetching comments:', error);
             }
-        },
+        },        
+        async fetchCommentsByDoctor(doctorId = null) {
+            try {
+                // Construct the URL based on whether doctorId is provided
+                let url = 'http://localhost:8080/comments';
+                if (doctorId) {
+                    url += `?doctorId=${doctorId}`;
+                }
+        
+                const response = await fetch(url);
+                if (response.ok) {
+                    this.comments = await response.json();
+                } else {
+                    console.error('Failed to fetch comments');
+                }
+            } catch (error) {
+                console.error('Error fetching comments:', error);
+            }
+        },        
+
         showCommentDetails(comment) {
             this.commentInModal = comment;
         },

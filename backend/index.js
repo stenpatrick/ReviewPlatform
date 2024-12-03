@@ -160,9 +160,19 @@ app.delete("/users/:id", (req, res) => {
 
 // Add Comments endpoint
 app.get("/comments", (req, res) => {
+    const { doctorId } = req.query;
+
+    // If doctorId is provided, filter comments by doctorId
+    if (doctorId) {
+        const filteredComments = comments.filter(comment => comment.doctorId === parseInt(doctorId));
+        return res.send(filteredComments);
+    }
+
+    // If no doctorId is provided, return all comments
     res.send(comments);
 });
 
+// Existing POST endpoint for adding comments
 app.post("/comments", (req, res) => {
     const { comment, doctorId, userId } = req.body;
 
@@ -194,18 +204,21 @@ app.post("/comments", (req, res) => {
     res.status(201).send(newComment);
 });
 
+// Existing GET endpoint for fetching a specific comment by ID
 app.get("/comments/:id", (req, res) => {
     const comment = getContent(comments, req, res);
     if (!comment) { return; }
     return res.send(comment);
 });
 
+// Existing DELETE endpoint for removing a comment by ID
 app.delete("/comments/:id", (req, res) => {
     const comment = getContent(comments, req, res);
     if (!comment) { return; }
     comments.splice(comments.indexOf(comment), 1);
     return res.status(204).send();
 });
+
 
 
 function CreateId(Table) {

@@ -61,11 +61,12 @@ const app = Vue.createApp({
             }
         },        
         async editDoctor(doctor) {
-            const newName = prompt('Enter new name for the doctor', doctor.name);
-            const newContact = prompt('Enter new contact for the doctor', doctor.contact);
-            const newRating = prompt('Enter new rating for the user', user.contact);
+            const newName = prompt('Enter new name for the doctor');
+            const newContact = prompt('Enter new contact for the doctor');
+            const newRating = prompt('Enter new rating for the doctor');
+            
             if (newName && newContact && newRating) {
-                const updatedDoctor = {
+                const newDoctor = {
                     name: newName,
                     contact: newContact,
                     rating: newRating
@@ -74,7 +75,7 @@ const app = Vue.createApp({
                     const response = await fetch(`http://localhost:8080/doctors/${doctor.id}`, {
                         method: 'PUT',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedDoctor)
+                        body: JSON.stringify(newDoctor)
                     });
                     if (response.ok) {
                         this.fetchDoctors(); // Refresh the doctor list

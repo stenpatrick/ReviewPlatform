@@ -45,7 +45,7 @@
                 `;
                 
                 // Fetch comments for this doctor
-                fetchCommentsByDoctor(doctorId).then(() => {
+                fetchFilteredComments('doctor', doctorId).then(() => {
                     displayComments();
                 });
             } else {
@@ -53,19 +53,6 @@
             }
         });
 
-        // Function to fetch comments from the server
-        async function fetchCommentsByDoctor(doctorId) {
-            try {
-                const response = await fetch(`http://localhost:8080/comments?doctorId=${doctorId}`);
-                if (response.ok) {
-                    comments = await response.json(); // Store fetched comments in the global array
-                } else {
-                    console.error('Failed to fetch comments');
-                }
-            } catch (error) {
-                console.error('Error fetching comments:', error);
-            }
-        }
 
         // Function to display comments on the page
         function displayComments() {

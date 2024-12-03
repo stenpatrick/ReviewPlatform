@@ -211,12 +211,12 @@ const app = Vue.createApp({
                 console.error('Error fetching comments:', error);
             }
         },        
-        async fetchCommentsByDoctor(doctorId = null) {
+        async fetchFilteredComments(filterType = 'doctor', id = null) {
             try {
-                // Construct the URL based on whether doctorId is provided
+                // Construct the URL based on the filter type and ID provided
                 let url = 'http://localhost:8080/comments';
-                if (doctorId) {
-                    url += `?doctorId=${doctorId}`;
+                if (id) {
+                    url += `?${filterType}Id=${id}`;
                 }
         
                 const response = await fetch(url);
@@ -228,7 +228,7 @@ const app = Vue.createApp({
             } catch (error) {
                 console.error('Error fetching comments:', error);
             }
-        },        
+        },
 
         showCommentDetails(comment) {
             this.commentInModal = comment;

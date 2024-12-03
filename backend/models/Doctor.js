@@ -2,12 +2,20 @@ module.exports = (sequelize, DataTypes) => {
   const Doctor = sequelize.define(
       'Doctor',
       {
-      id: {
+        id: {
               type: DataTypes.INTEGER,
               autoIncrement: true,
               primaryKey: true,
           },
         name: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        speciality: {
+          type: DataTypes.STRING,
+          allowNull: false,
+        },
+        description: {
           type: DataTypes.STRING,
           allowNull: false,
         },

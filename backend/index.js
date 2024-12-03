@@ -15,8 +15,8 @@ app.get("/", (req, res) => {
 });
 
 let doctors = [
-    { id: 1, name: "Jane Doe", rating: 3, contact: "janedoe@gmail.com" },
-    { id: 2, name: "Joe Doe", rating: 5, contact: "+372 5823 7254" },
+    { id: 1, name: "Jane Doe", speciality: "surgeon", description: "decent doctor" , rating: 3, contact: "janedoe@gmail.com" },
+    { id: 2, name: "Joe Doe", speciality: "surgeon", description: "Best doctor" , rating: 5, contact: "+372 5823 7254" },
 ];
 let users = [
     { id: 1, name: "User1", contact: "user1@example.com" },
@@ -52,9 +52,19 @@ app.post("/doctors", (req, res) => {
         return res.status(400).send({ error: "Rating must be between 0 and 5" });
     }
 
+    if (!req.body.speciality || req.body.speciality.trim().length === 0) {
+        return res.status(400).send({ error: "Missing required field 'speciality'" });
+    }
+
+    if (!req.body.description || req.body.description.trim().length === 0) {
+        return res.status(400).send({ error: "Missing required field 'description'" });
+    }
+
     const newDoctor = {
         id: CreateId(doctors),
         name: req.body.name,
+        speciality: req.body.speciality,
+
         rating: isNaN(newRating) ? null : newRating,
         contact: req.body.contact || "" 
     };

@@ -279,5 +279,17 @@ const app = Vue.createApp({
         }
     }
 });
+function loadNavbar() {
+    // Use Fetch API to load the navbar.html content
+    fetch('components/navbar.html')
+    .then(response => response.text())
+        .then(data => {
+            // Insert the loaded navbar HTML into the navbar-container div
+            document.getElementById('navbar-container').innerHTML = data;
+        })
+        .catch(error => console.error('Error loading navbar:', error));
+}
 
+// Call the function to load the navbar when the page loads
+loadNavbar();
 app.mount('#app');

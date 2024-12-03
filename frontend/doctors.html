@@ -36,6 +36,8 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Specialty</th>
+                <th>Description</th>
                 <th>Rating</th>
                 <th>Contact</th>
                 <th>Actions</th>
@@ -44,6 +46,8 @@
         <tbody>
             <tr v-for="doctor in doctors" :key="doctor.id">
                 <td @click="showDoctorDetails(doctor)">{{ doctor.name }}</td>
+                <td>{{ doctor.speciality }}</td>
+                <td>{{ doctor.rating }}</td>
                 <td>{{ doctor.rating }}</td>
                 <td>{{ doctor.contact }}</td>
                 <td>
@@ -56,6 +60,6 @@
 </div>
 
 <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="rest-client.js"></script>
+<script src="backend/rest-client.js"></script>
 </body>
 </html>

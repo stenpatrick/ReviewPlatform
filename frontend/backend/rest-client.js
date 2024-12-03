@@ -2,6 +2,7 @@ const app = Vue.createApp({
     data() {
         return {
             doctors: [],
+            doctor: null,
             doctorInModal: null,
             users: [],
             userInModal: null,
@@ -9,7 +10,13 @@ const app = Vue.createApp({
             commentInModal: null
         };
     },
-    mounted() {
+        mounted() {
+        const doctorId = getDoctorIdFromURL(); // Get the doctor ID from the URL
+        if (doctorId) {
+            fetchDoctorDetails(doctorId).then(doctor => {
+                this.doctor = doctor;
+            });
+        }
         this.fetchDoctors();
         this.fetchUsers();
         this.fetchComments();
@@ -279,16 +286,39 @@ const app = Vue.createApp({
         }
     }
 });
+async function fetchDoctorDetails(id) {
+    try {
+        const response = await fetch(`http://localhost:8080/doctors/${id}`);
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.error('Failed to fetch doctor details:', response.status);
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching doctor details:', error);
+        return null;
+    }
+}
+
+
+// Utility to get doctor ID from URL
+function getDoctorIdFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+}
+
+// Utility to dynamically load the navbar
 function loadNavbar() {
-    // Use Fetch API to load the navbar.html content
     fetch('/frontend/components/navbar.html')
-    .then(response => response.text())
+        .then(response => response.text())
         .then(data => {
-            // Insert the loaded navbar HTML into the navbar-container div
             document.getElementById('navbar-container').innerHTML = data;
         })
         .catch(error => console.error('Error loading navbar:', error));
 }
+
+
 
 // Call the function to load the navbar when the page loads
 loadNavbar();

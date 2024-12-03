@@ -19,8 +19,7 @@
                         <h5 class="card-title">{{ doctor.name }}</h5>
                         <p class="card-text"><strong>Specialty:</strong> {{ doctor.speciality }}</p>
                         <p class="card-text"><strong>Rating:</strong> {{ doctor.rating }}</p>
-                        <td><a :href="'details/doctor-details.html?id=' + doctor.id">{{ doctor.name }}</a></td>
-                        <button @click="showDoctorDetails(doctor)" class="btn btn-info">View Details</button>
+                        <a :href="'details/doctor-details.html?id=' + doctor.id" class="btn btn-info">View Details</a>
                     </div>
                 </div>
             </div>

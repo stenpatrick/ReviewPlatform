@@ -281,7 +281,7 @@ const app = Vue.createApp({
 });
 function loadNavbar() {
     // Use Fetch API to load the navbar.html content
-    fetch('components/navbar.html')
+    fetch('/frontend/components/navbar.html')
     .then(response => response.text())
         .then(data => {
             // Insert the loaded navbar HTML into the navbar-container div

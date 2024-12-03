@@ -12,6 +12,7 @@
 
     <div id="app" class="container mt-4">
         <h1>Doctor Details</h1>
+        <!-- Show Doctor Details -->
         <div v-if="doctor">
             <h3>{{ doctor.name }}</h3>
             <p><strong>Specialty:</strong> {{ doctor.speciality }}</p>
@@ -19,16 +20,12 @@
             <p><strong>Rating:</strong> {{ doctor.rating }}</p>
             <p><strong>Contact:</strong> {{ doctor.contact }}</p>
         </div>
-        <div v-else>
-            <p>Loading doctor details...</p>
-        </div>
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="../backend/rest-client.js"></script>
     <script>
-        loadNavbar();
+            loadNavbar();
     </script>
-    
-    <script src="backend/rest-client.js"></script>
-    </body>
+</body>
 </html>

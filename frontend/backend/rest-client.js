@@ -43,36 +43,40 @@ const app = Vue.createApp({
         showDoctorDetails(doctor) {
             this.doctorInModal = doctor;
         },
-        async addDoctor () {
-            const newName = prompt('Enter new name for the doctor');
-            const newContact = prompt('Enter new contact for the doctor');
-            const newRating = prompt('Enter new rating for the doctor');
-            
-            if (newName && newContact && newRating) {
+        async addDoctor() {
+            const newName = prompt('Enter the name of the new doctor');
+            const newContact = prompt('Enter the contact of the new doctor');
+            const newSpeciality = prompt('Enter the specialty of the new doctor');
+            const newDescription = prompt('Enter a description for the new doctor');
+            const newRating = prompt('Enter the rating of the new doctor (1-5)');
+        
+            if (newName && newContact && newSpeciality && newDescription && newRating) {
                 const newDoctor = {
                     name: newName,
                     contact: newContact,
-                    rating: newRating
+                    speciality: newSpeciality,
+                    description: newDescription,
+                    rating: parseFloat(newRating),
                 };
         
                 try {
-                    const response = await fetch(`http://localhost:8080/doctors/`, {
-                        method: 'POST', 
+                    const response = await fetch('http://localhost:8080/doctors/', {
+                        method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(newDoctor)
                     });
-        
-                    if (!response.ok) throw new Error('Failed to add doctor');
-        
+                    if (!response.ok) {
+                        throw new Error('Failed to add doctor');
+                    }
                     const addedDoctor = await response.json();
-                    this.doctors.push(addedDoctor); 
+                    this.doctors.push(addedDoctor); // Add the new doctor to the UI
                 } catch (error) {
-                    console.error("Error adding doctor:", error);
+                    console.error('Error adding doctor:', error);
                 }
             } else {
-                console.log("All fields are required.");
+                alert('All fields are required.');
             }
-        },        
+        },            
         async editDoctor(doctor) {
             const newName = prompt('Enter new name for the doctor');
             const newContact = prompt('Enter new contact for the doctor');
@@ -311,20 +315,20 @@ const app = Vue.createApp({
         }
     }
 });
-async function fetchDoctorDetails(id) {
+async function fetchDoctorDetails(doctorId) {
     try {
-        const response = await fetch(`http://localhost:8080/doctors/${id}`);
-        if (response.ok) {
-            return await response.json();
-        } else {
-            console.error('Failed to fetch doctor details:', response.status);
-            return null;
+        const response = await fetch(`http://localhost:8080/doctors/${doctorId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch doctor details');
         }
+        const doctor = await response.json();
+        return doctor; // Includes name, speciality, description, etc.
     } catch (error) {
         console.error('Error fetching doctor details:', error);
         return null;
     }
 }
+
 
 
 // Utility to get doctor ID from URL

@@ -27,7 +27,7 @@
             <tr v-for="doctor in doctors" :key="doctor.id">
                 <td @click="showDoctorDetails(doctor)">{{ doctor.name }}</td>
                 <td>{{ doctor.speciality }}</td>
-                <td>{{ doctor.rating }}</td>
+                <td>{{ doctor.description || 'No description provided.'}}</td>
                 <td>{{ doctor.rating }}</td>
                 <td>{{ doctor.contact }}</td>
                 <td>

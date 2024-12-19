@@ -64,14 +64,15 @@ app.post("/doctors", (req, res) => {
         id: CreateId(doctors),
         name: req.body.name,
         speciality: req.body.speciality,
-
+        description: req.body.description, // Fix: Adding the missing description field
         rating: isNaN(newRating) ? null : newRating,
-        contact: req.body.contact || "" 
+        contact: req.body.contact || "",
     };
 
     doctors.push(newDoctor);
     res.status(201).send(newDoctor);
 });
+
 
 // Update a doctor by ID
 app.put("/doctors/:id", (req, res) => {

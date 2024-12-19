@@ -15,7 +15,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "mariadb": "^3.3.2",
+    "mariadb": "^3.4.0",
     "sequelize": "^6.37.4"
   },
   "devDependencies": {

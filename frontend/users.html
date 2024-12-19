@@ -9,36 +9,44 @@
 </head>
 <body>
     <div id="navbar-container"></div>
-
-<div id="app" class="container mt-4">
-    <h1>Users</h1>
-    <button @click="addUser()" class="btn btn-success btn-lg my-3">New user</button>
-    <table id="usersTable" class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Contact</th>
-                <th>Actions</th> 
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="user in users" :key="user.id">
-                <td @click="showUserDetails(user)">{{ user.name }}</td>
-                <td>{{ user.contact }}</td>
-                <td>
-                    <button @click="editUser(user)" class="btn btn-primary btn-sm">Edit</button>
-                    <button @click="deleteUser(user.id)" class="btn btn-danger btn-sm">Delete</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script>
-    loadNavbar();
-</script>
-<script src="backend/rest-client.js"></script>
+    <div id="app" class="container mt-4">
+        <h1>Users</h1>
+        <button @click="addUser()" class="btn btn-success btn-lg my-3">New user</button>
+        <div v-if="isUserFormVisible">
+            <form @submit.prevent="submitUserForm">
+                <div class="mb-3">
+                    <label for="userName" class="form-label">Name</label>
+                    <input v-model="selectedUser.name" type="text" class="form-control" id="userName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="userContact" class="form-label">Contact</label>
+                    <input v-model="selectedUser.contact" type="text" class="form-control" id="userContact" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" @click="isUserFormVisible = false" class="btn btn-danger">Cancel</button>
+            </form>
+        </div>
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="user in users" :key="user.id">
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.contact }}</td>
+                    <td>
+                        <button @click="editUser(user)" class="btn btn-primary btn-sm">Edit</button>
+                        <button @click="deleteUser(user.id)" class="btn btn-danger btn-sm">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="backend/rest-client.js"></script>
 </body>
 </html>
-

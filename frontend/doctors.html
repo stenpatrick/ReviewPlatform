@@ -9,37 +9,62 @@
 </head>
 <body>
     <div id="navbar-container"></div>
-<div id="app" class="container mt-4">
-    <h1>Doctors</h1>
-    <button @click="addDoctor()" class="btn btn-success btn-lg my-3">New doctor</button>
-    <table id="doctorsTable" class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Specialty</th>
-                <th>Description</th>
-                <th>Rating</th>
-                <th>Contact</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="doctor in doctors" :key="doctor.id">
-                <td @click="showDoctorDetails(doctor)">{{ doctor.name }}</td>
-                <td>{{ doctor.speciality }}</td>
-                <td>{{ doctor.description || 'No description provided.'}}</td>
-                <td>{{ doctor.rating }}</td>
-                <td>{{ doctor.contact }}</td>
-                <td>
-                    <button @click="editDoctor(doctor)" class="btn btn-primary btn-sm">Edit</button>
-                    <button @click="deleteDoctor(doctor.id)" class="btn btn-danger btn-sm">Delete</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="backend/rest-client.js"></script>
+    <div id="app" class="container mt-4">
+        <h1>Doctors</h1>
+        <button @click="addDoctor()" class="btn btn-success btn-lg my-3">New doctor</button>
+        <div v-if="isDoctorFormVisible">
+            <form @submit.prevent="submitDoctorForm">
+                <div class="mb-3">
+                    <label for="doctorName" class="form-label">Name</label>
+                    <input v-model="selectedDoctor.name" type="text" class="form-control" id="doctorName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="doctorContact" class="form-label">Contact</label>
+                    <input v-model="selectedDoctor.contact" type="text" class="form-control" id="doctorContact" required>
+                </div>
+                <div class="mb-3">
+                    <label for="doctorSpeciality" class="form-label">Speciality</label>
+                    <input v-model="selectedDoctor.speciality" type="text" class="form-control" id="doctorSpeciality" required>
+                </div>
+                <div class="mb-3">
+                    <label for="doctorDescription" class="form-label">Description</label>
+                    <input v-model="selectedDoctor.description" type="text" class="form-control" id="doctorDescription" required>
+                </div>
+                <div class="mb-3">
+                    <label for="doctorRating" class="form-label">Rating</label>
+                    <input v-model="selectedDoctor.rating" type="number" class="form-control" id="doctorRating" min="1" max="5" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="button" @click="isDoctorFormVisible = false" class="btn btn-danger">Cancel</button>
+            </form>
+        </div>
+        <table id="doctorsTable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Specialty</th>
+                    <th>Description</th>
+                    <th>Rating</th>
+                    <th>Contact</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="doctor in doctors" :key="doctor.id">
+                    <td>{{ doctor.name }}</td>
+                    <td>{{ doctor.speciality }}</td>
+                    <td>{{ doctor.description || 'No description provided.'}}</td>
+                    <td>{{ doctor.rating }}</td>
+                    <td>{{ doctor.contact }}</td>
+                    <td>
+                        <button @click="editDoctor(doctor)" class="btn btn-primary btn-sm">Edit</button>
+                        <button @click="deleteDoctor(doctor.id)" class="btn btn-danger btn-sm">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="backend/rest-client.js"></script>
 </body>
 </html>

@@ -2,9 +2,16 @@
  
 ## Usage
 1. Clone the repository
-2. In the package folder run
+2. Navigate to backend
+3. Open powershell
+4. type in
+   
 ```npm install```
-3. Launch with
+
+6. Launch with
+   
 ```NPM```
-4. In a browser navigate to
+
+8. In a browser navigate to
+   
 ```http://localhost:8080```
